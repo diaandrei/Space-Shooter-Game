@@ -6,6 +6,8 @@ using UnityEngine;
 public class WaveConfigSO : ScriptableObject
 {
     [SerializeField] List <GameObject> enemyPrefabs;
+    [SerializeField] List <GameObject> bossPrefabs;
+    [SerializeField] bool isBossWave = false;
    
     // Start is called before the first frame update
     [SerializeField] Transform pathPrefab;
@@ -15,6 +17,22 @@ public class WaveConfigSO : ScriptableObject
     [SerializeField] float timeBetweenEnemySpawns = 1f;
     [SerializeField] float spawnTimeVariance = 0f;
     [SerializeField] float minimumSpawnTime = 0.2f;
+
+    public bool IsBossWave()
+    {
+    if (bossPrefabs == null)
+    {
+        return false;
+    }
+    return bossPrefabs.Count > 0;
+    }
+
+
+    // Get boss prefabs
+    public List<GameObject> GetBossPrefabs()
+    {
+        return bossPrefabs;
+    }
 
 // get the number of enemies in the wave
     public int GetEnemyCount()
@@ -36,15 +54,23 @@ public class WaveConfigSO : ScriptableObject
     }
 
 // get the waypoints from the path
-    public List<Transform> GetWaypoints()
+   public List<Transform> GetWaypoints()
+{
+    List<Transform> waypoints = new List<Transform>();
+
+    if (pathPrefab == null)
     {
-        List<Transform> waypoints = new List<Transform>();
-        foreach(Transform child in pathPrefab)
-        {
-            waypoints.Add(child);
-        }
+        Debug.LogError("Path prefab is null.");
         return waypoints;
     }
+
+    foreach (Transform child in pathPrefab)
+    {
+        waypoints.Add(child);
+    }
+    return waypoints;
+}
+
 
     public float GetMoveSpeed()
     {

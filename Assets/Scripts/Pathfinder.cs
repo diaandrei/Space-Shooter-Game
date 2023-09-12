@@ -33,21 +33,29 @@ public class Pathfinder : MonoBehaviour
         FollowPath();
     }
 
-// moving the enemy to the next waypoint
-    void FollowPath()
+    // moving the enemy to the next waypoint
+   void FollowPath()
     {
-        if(waypointIndex < waypoints.Count)
+    if (waypointIndex < waypoints.Count)
+    {
+        // get the position of the next waypoint
+        Vector3 targetPosition = waypoints[waypointIndex].position;
+        // move the enemy towards the next waypoint
+        float delta = waveConfig.GetMoveSpeed() * Time.deltaTime;
+        transform.position = Vector2.MoveTowards(transform.position, targetPosition, delta);
+        // update the waypoint index when the enemy reaches the next waypoint
+        if (transform.position == targetPosition)
         {
-            // get the position of the next waypoint
-            Vector3 targetPosition = waypoints[waypointIndex].position;
-            // move the enemy towards the next waypoint
-            float delta = waveConfig.GetMoveSpeed() * Time.deltaTime;
-            transform.position = Vector2.MoveTowards(transform.position, targetPosition, delta);
-            // update the waypoint index when the enemy reaches the next waypoint
-            if(transform.position == targetPosition)
-            {
-                waypointIndex++;
-            }
+            waypointIndex++;
+        }
+    }
+    else
+    {
+        // Check if the object is a boss
+        if (enemySpawner.IsCurrentWaveBoss())
+        {
+            // Reset the waypoint index to loop the path
+            waypointIndex = 0;
         }
         else
         {
@@ -56,3 +64,6 @@ public class Pathfinder : MonoBehaviour
         }
     }
 }
+
+}
+

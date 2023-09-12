@@ -11,6 +11,12 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] float timeBetweenWaves = 0f;
     WaveConfigSO currentWave;
 
+    [Header("Rotation")]
+    [SerializeField] private bool applyCustomRotation = false;
+
+    private List<GameObject> spawnedBosses = new List<GameObject>();
+
+
     void Start()
     {
        StartCoroutine(SpawnEnemyWaves());
@@ -22,32 +28,82 @@ public class EnemySpawner : MonoBehaviour
     }
 
     // spawn the enemies in the wave and care about it's position
-    IEnumerator SpawnEnemyWaves()
-    {   
-        // first loop that spawns the waves
-        do 
-        {
-            
-        // second loop that spawns the enemies in the wave
-        foreach(WaveConfigSO wave in waveConfigs)
+ IEnumerator SpawnEnemyWaves()
+{
+    do
+    {
+        foreach (WaveConfigSO wave in waveConfigs)
         {
             currentWave = wave;
-        // looping through the enemies and spawning them in the wave
-        for (int i = 0; i < currentWave.GetEnemyCount(); i++)
-        {
-            Instantiate(currentWave.GetEnemyPrefab(i), 
-                        currentWave.GetStartingWaypoint().position, 
-                        Quaternion.Euler(0,0,180),
-                        transform);
-            
-            // updating so the enemies wait for the next enemy to spawn
-            yield return new WaitForSeconds(currentWave.GetRandomSpawnTime());
-        }
-        yield return new WaitForSeconds(timeBetweenWaves);
+            if (currentWave == null)
+            {
+                Debug.LogError("Current wave is null.");
+                continue;
             }
-            // end the loop if the wave is not looping
-        } while (isLooping);
-    }
+
+            if (currentWave.IsBossWave())
+            {
+                SpawnBosses();
+                yield return new WaitUntil(() => !IsBossActive());
+            }
+            else
+            {
+                for (int i = 0; i < currentWave.GetEnemyCount(); i++)
+                {
+                    Quaternion rotation = applyCustomRotation ? Quaternion.Euler(0, 0, 180) : Quaternion.identity;
+                    Instantiate(currentWave.GetEnemyPrefab(i),
+                                currentWave.GetStartingWaypoint().position,
+                                rotation,
+                                transform);
+
+                    yield return new WaitForSeconds(currentWave.GetRandomSpawnTime());
+                }
+                yield return new WaitForSeconds(timeBetweenWaves);
+            }
+        }
+    } while (isLooping);
 }
 
 
+
+  private void SpawnBosses()
+{
+    Debug.Log("Spawning Bosses");
+    // spawning bosses
+    for (int i = 0; i < currentWave.GetBossPrefabs().Count; i++)
+    {
+        Quaternion rotation = applyCustomRotation ? Quaternion.Euler(0, 0, 180) : Quaternion.identity;
+        GameObject boss = Instantiate(currentWave.GetBossPrefabs()[i], 
+                        currentWave.GetStartingWaypoint().position, 
+                        rotation,
+                        transform);
+        spawnedBosses.Add(boss);
+    }
+}
+
+public bool IsCurrentWaveBoss()
+{
+    return currentWave != null && currentWave.IsBossWave();
+}
+
+private bool IsBossActive()
+{
+    return spawnedBosses.Count > 0 && spawnedBosses.Exists(boss => boss != null);
+}
+
+
+
+private bool AreAllBossesDestroyed()
+{
+    for (int i = spawnedBosses.Count - 1; i >= 0; i--)
+    {
+        if (spawnedBosses[i] == null)
+        {
+            spawnedBosses.RemoveAt(i);
+        }
+    }
+    return spawnedBosses.Count == 0;
+}
+
+
+}

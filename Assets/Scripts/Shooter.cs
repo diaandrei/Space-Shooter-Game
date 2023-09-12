@@ -31,6 +31,15 @@ public class Shooter : MonoBehaviour
 
     Coroutine firingCoroutine;
 
+    // creating a variable for the audio player
+    AudioPlayer audioPlayer;
+
+    // this is the method that will be called from the player script
+    void Awake()
+    {
+        audioPlayer = FindObjectOfType<AudioPlayer>();
+    }
+
     void Start()
     {
         if (useAI)
@@ -64,22 +73,26 @@ IEnumerator FireContinuously()
 {
     while(true)
     {
+        // creating a variable for the projectile rotation so we can rotate it as they are upside down
         GameObject instance = Instantiate(projectilePrefab, 
                                             transform.position, 
                                             Quaternion.Euler(projectileRotation));
 
         Rigidbody2D rb = instance.GetComponent<Rigidbody2D>();
+        // checking if the projectile has a rigidbody
         if(rb != null)
         {
             rb.velocity = transform.up * projectileSpeed;
         }
 
+        // destroying the projectile after a certain amount of time
         Destroy(instance, projectileLifetime);
-
         float timeToNextProjectile = Random.Range(baseFiringRate - firingRateVariance, 
                                                 baseFiringRate + firingRateVariance);
 
         timeToNextProjectile = Mathf.Clamp(timeToNextProjectile, minimumFiringRate, float.MaxValue);
+        // calling the method from the audio player script
+        audioPlayer.PlayShootingClip();
 
         yield return new WaitForSeconds(timeToNextProjectile);
     }
