@@ -9,11 +9,10 @@ Please feel free to reach out if there are any issues or if you have any feedbac
 Unity Version:
 The project was developed in Unity 2021.3.21f1.
 Instructions to Run the Application:
-1.	The game comes packaged as a ZIP file. Download and extract this ZIP file to your desired location.
-2.	Ensure Unity 2021.3.21f1 is installed on your system. If not, please install it from the official Unity website.
-3.	Launch Unity and select Open project. Navigate to where you've extracted the game project and click Open.
-4.	Once the project is fully loaded in Unity, navigate to the File menu, then select Build and Run. Simply follow the instructions in the appearing dialog box.
-5.	There's also an option to hit the Play button in the Unity editor to start the game directly in the editor.
+1.	Ensure Unity 2021.3.21f1 is installed on your system. If not, please install it from the official Unity website.
+2.	Launch Unity and select Open project. Navigate to where you've extracted the game project and click Open.
+3.	Once the project is fully loaded in Unity, navigate to the File menu, then select Build and Run. Simply follow the instructions in the appearing dialog box.
+4.	There's also an option to hit the Play button in the Unity editor to start the game directly in the editor.
    
 Brief Description of the Game:
 
